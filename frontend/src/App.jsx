@@ -4,9 +4,9 @@ function App() {
   // Set up state to hold the products from Python
   const [products, setProducts] = useState([]);
 
-  // Fetch data when the page loads
+// Fetch data when the page loads
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/products')
+    fetch('https://jai-mata-di-hardware.onrender.com/api/products')
       .then((response) => response.json())
       .then((data) => setProducts(data))
       .catch((error) => console.error('Error fetching data:', error));
