@@ -1,26 +1,51 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from dotenv import load_dotenv
+
+# Load the secret variables from the .env file
+load_dotenv()
+
+# Database Setup
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# Define the Product Table exactly as it looks in Supabase
+class Product(Base):
+    __tablename__ = "products"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    category = Column(String)
+    sku = Column(String)
 
 app = FastAPI()
 
-# Allow the React frontend to communicate with this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Your Vite frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Helper function to get the database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Jai Mata Di Hardware API"}
 
+# Updated endpoint to fetch from Supabase
 @app.get("/api/products")
-def get_products():
-    return [
-        {"id": 1, "name": "Premium Bi-Metal Hacksaw Blade", "category": "Cutting Tools", "sku": "HB-201"},
-        {"id": 2, "name": "Brass Angle Valve (Heavy Duty)", "category": "Bathroom Fittings", "sku": "BF-405"},
-        {"id": 3, "name": "Stainless Steel Shower Head", "category": "Bathroom Fittings", "sku": "BF-406"},
-        {"id": 4, "name": "Carbon Steel Hacksaw Frame", "category": "Cutting Tools", "sku": "HF-101"},
-    ]
+def get_products(db: Session = Depends(get_db)):
+    products = db.query(Product).all()
+    return products
