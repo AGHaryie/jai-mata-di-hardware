@@ -32,17 +32,33 @@ function App() {
     return matchesSearch && matchesCategory;
   });
 
-  // --- INQUIRY SUBMIT LOGIC ---
+// --- INQUIRY SUBMIT LOGIC ---
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Open WhatsApp with pre-filled message immediately
+    // 1. Save the lead to your Supabase Database via your Render backend
+    try {
+      await fetch('https://jai-mata-di-hardware.onrender.com/api/inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_name: inquiryProduct.name,
+          sku: inquiryProduct.sku,
+          customer_name: customerName,
+          customer_phone: customerPhone
+        }),
+      });
+      console.log("Lead successfully saved to database!");
+    } catch (error) {
+      console.error("Error saving lead:", error);
+    }
+
+    // 2. Open WhatsApp with pre-filled message
     const message = `Hello Jai Mata Di Hardware! I am ${customerName}. I would like to inquire about bulk pricing for: ${inquiryProduct.name} (SKU: ${inquiryProduct.sku}).`;
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
-
-    // 2. Save to DB (Optional: we can connect this to the Python backend later!)
-    console.log("Saving to DB:", { product: inquiryProduct.name, customerName, customerPhone });
 
     // 3. Close Modal & Clear Form
     setInquiryProduct(null);
