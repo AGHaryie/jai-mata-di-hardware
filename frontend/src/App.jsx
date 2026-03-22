@@ -84,9 +84,15 @@ function App() {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <div key={product.id} className="product-card">
-              <div className="card-image-placeholder">
-                <span>No Image</span>
-              </div>
+              {
+              product.image_url ? (
+                <img src={product.image_url} alt={product.name} className="product-image" />): 
+                (
+                  <div className="card-image-placeholder">
+                    <span>No Image</span>
+                    </div>
+                )
+              }
               <div className="card-content">
                 <span className="category-badge">{product.category}</span>
                 <h2>{product.name}</h2>

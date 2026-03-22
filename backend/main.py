@@ -20,6 +20,7 @@ class Product(Base):
     name = Column(String)
     category = Column(String)
     sku = Column(String)
+    image_url = Column(String)
 
 class DBInquiry(Base):
     __tablename__ = "inquiries"
