@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
@@ -36,6 +36,18 @@ class InquiryCreate(BaseModel):
     sku: str
     customer_name: str
     customer_phone: str
+
+class ProductBase(BaseModel):
+    name: str
+    category: str
+    sku: str
+    image_url: str | None = None  # The "| None" means it's optional
+
+class ProductCreate(ProductBase):
+    pass
+
+class ProductUpdate(ProductBase):
+    pass
 
 app = FastAPI()
 
