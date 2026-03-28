@@ -88,3 +88,53 @@ def create_inquiry(inquiry: InquiryCreate, db: Session = Depends(get_db)):
     db.add(new_inquiry)
     db.commit()
     return {"message": "Inquiry saved successfully!"}
+
+# --- ADMIN ROUTES (Add, Edit, Delete Products) ---
+
+# 1. ADD a new product
+@app.post("/api/products")
+def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+    # Create a new database row using the data sent from React
+    new_product = Product(
+        name=product.name,
+        category=product.category,
+        sku=product.sku,
+        image_url=product.image_url
+    )
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
+    return new_product
+
+# 2. EDIT an existing product
+@app.put("/api/products/{product_id}")
+def update_product(product_id: int, product: ProductUpdate, db: Session = Depends(get_db)):
+    # Find the exact product by its ID
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Update the fields
+    db_product.name = product.name
+    db_product.category = product.category
+    db_product.sku = product.sku
+    db_product.image_url = product.image_url
+        
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+# 3. DELETE a product
+@app.delete("/api/products/{product_id}")
+def delete_product(product_id: int, db: Session = Depends(get_db)):
+    # Find the product
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+        
+    # Delete it from the database
+    db.delete(db_product)
+    db.commit()
+    return {"message": "Product successfully deleted!"}
