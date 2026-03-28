@@ -21,6 +21,7 @@ class Product(Base):
     category = Column(String)
     sku = Column(String)
     image_url = Column(String)
+    badge = Column(String, nullable=True)
 
 class DBInquiry(Base):
     __tablename__ = "inquiries"
@@ -42,6 +43,7 @@ class ProductBase(BaseModel):
     category: str
     sku: str
     image_url: str | None = None  # The "| None" means it's optional
+    badge: str | None = None
 
 class ProductCreate(ProductBase):
     pass
@@ -100,6 +102,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
         category=product.category,
         sku=product.sku,
         image_url=product.image_url
+        badge=product.badge
     )
     db.add(new_product)
     db.commit()
@@ -120,6 +123,7 @@ def update_product(product_id: int, product: ProductUpdate, db: Session = Depend
     db_product.category = product.category
     db_product.sku = product.sku
     db_product.image_url = product.image_url
+    db_product.badge = product.badge
         
     db.commit()
     db.refresh(db_product)
@@ -138,3 +142,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     db.delete(db_product)
     db.commit()
     return {"message": "Product successfully deleted!"}
+
+# --- Get Total Inquiries Count ---
+@app.get("/api/inquiries/count")
+def get_inquiry_count(db: Session = Depends(get_db)):
+    # Assuming your database model is named 'Inquiry'
+    count = db.query(Inquiry).count()
+    return {"count": count}
