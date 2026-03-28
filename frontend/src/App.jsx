@@ -9,7 +9,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [inquiryCount, setInquiryCount] = useState(0); // Holds the real DB count
   const [isBulkMode, setIsBulkMode] = useState(true); // Premium Bulk/Retail Toggle
-  
+
   // State for the Inquiry Modal
   const [inquiryProduct, setInquiryProduct] = useState(null);
   const [customerName, setCustomerName] = useState('');
@@ -20,7 +20,7 @@ function App() {
   const SECRET_PIN = "Santosh@1234";
 
   // YOUR FATHER'S WHATSAPP NUMBER
-  const WHATSAPP_NUMBER = "919811482950"; 
+  const WHATSAPP_NUMBER = "919811482950";
 
   // --- DATA FETCHING ---
   useEffect(() => {
@@ -42,7 +42,7 @@ function App() {
 
   // Filtering Logic
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           product.sku.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -92,12 +92,12 @@ function App() {
 
   return (
     <div className="app-container">
-      
+
       {/* --- PREMIUM HERO HEADER --- */}
       <header className="hero-header">
         <h1>BULK HARDWARE.<br/>TRUSTED SUPPLY.</h1>
         <p>Best prices for contractors & wholesalers in Delhi</p>
-        
+
         <div className="hero-buttons">
           <button className="btn-primary" onClick={() => window.scrollTo({top: 500, behavior: 'smooth'})}>
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -112,9 +112,9 @@ function App() {
 
       {/* --- SEARCH BAR (Dark Mode Style) --- */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <input 
-          type="text" 
-          placeholder="🔍 Search inventory by product name or SKU..." 
+        <input
+          type="text"
+          placeholder="🔍 Search inventory by product name or SKU..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-bar"
@@ -126,7 +126,7 @@ function App() {
       <div className="premium-nav-bar">
         <div className="nav-categories">
           {categories.slice(0, 5).map(category => (
-            <button 
+            <button
               key={category}
               className={`nav-btn ${selectedCategory === category ? 'active' : ''}`}
               onClick={() => setSelectedCategory(category)}
@@ -135,16 +135,16 @@ function App() {
             </button>
           ))}
         </div>
-        
+
         <div className="mode-toggle">
-          <button 
-            className={`toggle-btn ${!isBulkMode ? 'active' : ''}`} 
+          <button
+            className={`toggle-btn ${!isBulkMode ? 'active' : ''}`}
             onClick={() => setIsBulkMode(false)}
           >
             Retail Mode
           </button>
-          <button 
-            className={`toggle-btn bulk ${isBulkMode ? 'active' : ''}`} 
+          <button
+            className={`toggle-btn bulk ${isBulkMode ? 'active' : ''}`}
             onClick={() => setIsBulkMode(true)}
           >
             📦 Bulk Mode
@@ -163,7 +163,7 @@ function App() {
       {/* --- DARK DATA-RICH PRODUCT GRID --- */}
       <div className="product-grid">
         {filteredProducts.length > 0 ? (
-          filteredProducts.map((product, index) => (
+          filteredProducts.map((product) => (
             <div key={product.id} className="dark-product-card">
               {/* Dynamic Admin-Controlled Badge */}
               {product.badge && (
@@ -171,34 +171,34 @@ function App() {
                   {product.badge === 'Best Seller' ? '🏆 BEST SELLER' : '⚠️ LIMITED STOCK'}
                 </div>
               )}
-              
+
               {product.image_url ? (
                 <img src={product.image_url} alt={product.name} className="product-image" />
               ) : (
                 <div className="card-image-placeholder"><span>No Image</span></div>
               )}
-              
+
               <div className="card-content">
                 <h3>{product.name}</h3>
                 <p className="sku">SKU: {product.sku}</p>
-                
+
                 {/* Pricing UI Placeholder */}
                 <div className="pricing-ui">
                   {isBulkMode ? (
                     <p className="bulk-price">
-                      <span className="qty">Bulk Rate ➔</span> 
+                      <span className="qty">Bulk Rate ➔</span>
                       <span className="unit">Request via WhatsApp</span>
                     </p>
                   ) : (
                     <p className="retail-price">
-                      <span className="qty">Single ➔</span> 
+                      <span className="qty">Single ➔</span>
                       <span className="unit">Request via WhatsApp</span>
                     </p>
                   )}
                 </div>
 
-                <button 
-                  className="btn-whatsapp" 
+                <button
+                  className="btn-whatsapp"
                   onClick={() => setInquiryProduct(product)}
                 >
                   <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style={{marginRight: '8px'}}><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.656.833 5.141 2.422 7.224L.812 24l4.912-1.286A11.93 11.93 0 0012.031 24c6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zM17.56 16.29c-.234.661-1.375 1.276-1.896 1.344-.521.068-1.12.161-3.307-.745-2.63-1.094-4.328-3.766-4.458-3.938-.13-.172-1.062-1.411-1.062-2.687 0-1.276.661-1.906.896-2.14.234-.234.505-.292.677-.292.172 0 .344 0 .49.005.156.005.328-.063.51.375.188.443.646 1.583.703 1.698.057.115.094.245.016.396-.078.151-.115.245-.229.375-.115.13-.245.286-.344.385-.115.115-.24.24-.104.474.135.234.604 1.005 1.297 1.625.896.802 1.656 1.047 1.885 1.161.229.115.365.094.5-.057.135-.151.583-.677.74-9.911.156-.234.312-.198.521-.115.208.083 1.312.615 1.536.729.224.115.375.172.432.266.057.094.057.542-.177 1.203z"/></svg>
@@ -239,7 +239,7 @@ function App() {
               <p>Cities Served</p>
             </div>
           </div>
-          
+
           <div className="live-notification">
             <div className="notif-content">
               <span className="flame">🔥</span>
@@ -308,21 +308,21 @@ function App() {
             <h3 style={{color: 'white', marginBottom: '1rem'}}>WhatsApp Inquiry</h3>
             <p className="modal-product-name" style={{color: '#f59e0b'}}>{inquiryProduct.name}</p>
             <p className="modal-sku" style={{color: '#94a3b8', marginBottom: '1.5rem'}}>SKU: {inquiryProduct.sku}</p>
-            
+
             <form onSubmit={handleInquirySubmit}>
-              <input 
-                type="text" 
-                placeholder="Your Name / Business Name" 
-                required 
+              <input
+                type="text"
+                placeholder="Your Name / Business Name"
+                required
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 className="modal-input"
                 style={{background: '#0f172a', color: 'white', borderColor: '#475569'}}
               />
-              <input 
-                type="tel" 
-                placeholder="Your WhatsApp Number" 
-                required 
+              <input
+                type="tel"
+                placeholder="Your WhatsApp Number"
+                required
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 className="modal-input"
@@ -338,8 +338,8 @@ function App() {
       )}
 
       {/* SECRET ADMIN TRIGGER */}
-      <div 
-        onClick={handleSecretLogin} 
+      <div
+        onClick={handleSecretLogin}
         style={{ textAlign: 'center', padding: '2rem', color: '#0b0f19', cursor: 'default' }}
       >
         π
