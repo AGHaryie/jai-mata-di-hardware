@@ -23,6 +23,15 @@ class Product(Base):
     image_url = Column(String)
     badge = Column(String, nullable=True)
 
+class Inquiry(Base):
+    __tablename__ = "inquiries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_name = Column(String)
+    sku = Column(String)
+    customer_name = Column(String)
+    customer_phone = Column(String)
+
 class DBInquiry(Base):
     __tablename__ = "inquiries"
     id = Column(Integer, primary_key=True, index=True)
@@ -101,7 +110,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
         name=product.name,
         category=product.category,
         sku=product.sku,
-        image_url=product.image_url
+        image_url=product.image_url,
         badge=product.badge
     )
     db.add(new_product)
@@ -114,17 +123,17 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 def update_product(product_id: int, product: ProductUpdate, db: Session = Depends(get_db)):
     # Find the exact product by its ID
     db_product = db.query(Product).filter(Product.id == product_id).first()
-    
+
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     # Update the fields
     db_product.name = product.name
     db_product.category = product.category
     db_product.sku = product.sku
     db_product.image_url = product.image_url
     db_product.badge = product.badge
-        
+
     db.commit()
     db.refresh(db_product)
     return db_product
@@ -134,10 +143,10 @@ def update_product(product_id: int, product: ProductUpdate, db: Session = Depend
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     # Find the product
     db_product = db.query(Product).filter(Product.id == product_id).first()
-    
+
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
-        
+
     # Delete it from the database
     db.delete(db_product)
     db.commit()

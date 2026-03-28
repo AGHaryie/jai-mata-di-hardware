@@ -1,0 +1,14 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: check-ast          # Instantly checks Python files for syntax errors (like missing commas!)
+    -   id: trailing-whitespace # Removes messy invisible spaces
+    -   id: end-of-file-fixer   # Ensures files end with a clean blank line
+    -   id: check-yaml          # Checks if your YAML files are broken
+
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.4
+    hooks:
+    -   id: ruff                # Runs the Ruff linter to catch bad variables
+        args: [ --fix ]         # Automatically fixes what it can!
