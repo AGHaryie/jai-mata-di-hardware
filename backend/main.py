@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, Depends, HTTPException
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
@@ -42,8 +43,8 @@ class ProductBase(BaseModel):
     name: str
     category: str
     sku: str
-    image_url: str | None = None  # The "| None" means it's optional
-    badge: str | None = None
+    image_url: Optional[str] = None  # The "| None" means it's optional
+    badge: Optional[str] = None
 
 class ProductCreate(ProductBase):
     pass
@@ -144,3 +145,30 @@ def get_inquiry_count(db: Session = Depends(get_db)):
     # Safely querying the DBInquiry model now!
     count = db.query(DBInquiry).count()
     return {"count": count}
+
+class DBChat(Base):
+    __tablename__ = "chats"
+    id = Column(Integer, primary_key=True, index=True)
+    summary = Column(String)    # The AI-generated summary
+    transcript = Column(String) # The full raw chat text
+    customer_info = Column(String, nullable=True) # Name/Phone if found
+
+class ChatCreate(BaseModel):
+    summary: str
+    transcript: str
+    customer_info: Optional[str] = None
+
+@app.post("/api/chats")
+def save_chat_lead(chat: ChatCreate, db: Session = Depends(get_db)):
+    new_chat = DBChat(
+        summary=chat.summary,
+        transcript=chat.transcript,
+        customer_info=chat.customer_info
+    )
+    db.add(new_chat)
+    db.commit()
+    return {"message": "AI Chat Lead saved!"}
+
+@app.get("/api/chats")
+def get_chats(db: Session = Depends(get_db)):
+    return db.query(DBChat).all()

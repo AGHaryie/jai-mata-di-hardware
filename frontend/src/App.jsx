@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Chatbot from './Chatbot';
 import AdminDashboard from './AdminDashboard';
 import './App.css';
 
@@ -7,10 +8,11 @@ function App() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [isChatOpen, setIsChatOpen] = useState(false); // Controls the AI Chat
   const [inquiryCount, setInquiryCount] = useState(0); // Holds the real DB count
   const [isBulkMode, setIsBulkMode] = useState(true); // Premium Bulk/Retail Toggle
 
-  // State for the Inquiry Modal
+  // State for the Individual Product Inquiry Modal
   const [inquiryProduct, setInquiryProduct] = useState(null);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -48,7 +50,7 @@ function App() {
     return matchesSearch && matchesCategory;
   });
 
-  // --- INQUIRY SUBMIT LOGIC ---
+  // --- INQUIRY SUBMIT LOGIC (For single products) ---
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
 
@@ -103,7 +105,8 @@ function App() {
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             Explore Products
           </button>
-          <button className="btn-secondary" onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})}>
+          {/* UPDATED: This button now triggers the AI Chatbot */}
+          <button className="btn-secondary" onClick={() => setIsChatOpen(true)}>
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             Get Quote
           </button>
@@ -286,22 +289,48 @@ function App() {
         </div>
       </div>
 
-      {/* --- 7. PREMIUM FOOTER --- */}
+      {/* --- PREMIUM FOOTER --- */}
       <footer className="premium-footer">
-        <div className="footer-logo">
-          <h2>JAI MATA DI</h2>
-          <p>HARDWARE</p>
+        <div className="footer-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="50,10 90,80 10,80" fill="none" stroke="#ef4444" strokeWidth="4" />
+            <polygon points="10,30 90,30 50,100" fill="none" stroke="#ef4444" strokeWidth="4" />
+            <text x="50" y="63" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="bold" fill="#ef4444" textAnchor="middle">माँ</text>
+          </svg>
+          <div>
+            <h2>JAI MATA DI</h2>
+            <p>HARDWARE</p>
+          </div>
         </div>
+
         <div className="footer-links">
-          <a href="mailto:santoshjmdjmd1@gmail.com">santoshjmdjmd1@gmail.com</a>
+          {/* Styled Email Link */}
+          <a href="mailto:santoshjmdjmd1@gmail.com" className="contact-link">
+            ✉️ santoshjmdjmd1@gmail.com
+          </a>
         </div>
+
         <div className="footer-contact">
-          <span className="phone">+91 9811482950</span>
-          <span className="whatsapp-tag">🟢 WhatsApp</span>
+          {/* Clickable Phone Number using tel: */}
+          <a href="tel:+919811482950" className="phone-link">
+            📞 +91 9811482950
+          </a>
+
+          {/* Clickable WhatsApp Button */}
+          <a
+            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            target="_blank"
+            rel="noreferrer"
+            className="whatsapp-tag"
+            style={{textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px'}}
+          >
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.656.833 5.141 2.422 7.224L.812 24l4.912-1.286A11.93 11.93 0 0012.031 24c6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zM17.56 16.29c-.234.661-1.375 1.276-1.896 1.344-.521.068-1.12.161-3.307-.745-2.63-1.094-4.328-3.766-4.458-3.938-.13-.172-1.062-1.411-1.062-2.687 0-1.276.661-1.906.896-2.14.234-.234.505-.292.677-.292.172 0 .344 0 .49.005.156.005.328-.063.51.375.188.443.646 1.583.703 1.698.057.115.094.245.016.396-.078.151-.115.245-.229.375-.115.13-.245.286-.344.385-.115.115-.24.24-.104.474.135.234.604 1.005 1.297 1.625.896.802 1.656 1.047 1.885 1.161.229.115.365.094.5-.057.135-.151.583-.677.74-9.911.156-.234.312-.198.521-.115.208.083 1.312.615 1.536.729.224.115.375.172.432.266.057.094.057.542-.177 1.203z"/></svg>
+            WhatsApp
+          </a>
         </div>
       </footer>
 
-      {/* --- INQUIRY MODAL --- */}
+      {/* --- INDIVIDUAL PRODUCT INQUIRY MODAL --- */}
       {inquiryProduct && (
         <div className="modal-overlay">
           <div className="modal-content" style={{background: '#1e293b', border: '1px solid #334155', color: 'white'}}>
@@ -335,6 +364,14 @@ function App() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* --- NEW: AI CHATBOT MODAL --- */}
+      {isChatOpen && (
+        <Chatbot
+          onClose={() => setIsChatOpen(false)}
+          whatsappNumber={WHATSAPP_NUMBER}
+        />
       )}
 
       {/* SECRET ADMIN TRIGGER */}
